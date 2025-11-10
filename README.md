@@ -35,18 +35,7 @@ assert engine.query("foo BEF/2 bar")
 
 ### 📦 Install
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -e .[dev]   # editable + dev extras
-# or runtime only
-pip install -e .
-```
-
-Publishing to PyPI:
-```bash
-python -m pip install --upgrade build twine
-python -m build
-python -m twine upload dist/*
+python -m pip install lexiquery
 ```
 
 ### 🧪 Tests
@@ -99,22 +88,11 @@ from lexiquery import LexiQuery
 engine = LexiQuery("foo bar baz qux")
 assert engine.query("foo BEF/2 bar")
 ```
-
-### 📦 安装方式
+### 📦 安装
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -e .[dev]   # 本地开发
-# 或仅安装运行时
-pip install -e .
+python -m pip install lexiquery
 ```
 
-发布到 PyPI：
-```bash
-python -m pip install --upgrade build twine
-python -m build
-python -m twine upload dist/*
-```
 
 ### 🧪 运行测试
 ```bash
