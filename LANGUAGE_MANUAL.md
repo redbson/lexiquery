@@ -7,11 +7,12 @@
 ## English Guide
 
 ### 📌 Version Info
-- Version: **v2025.11.10**
+- Version: **v2025.11.11**
 
 ### 1️⃣ Foundations
 - **Expressions**: sequences of minimal expressions + operators evaluated to `True/False`.
 - **Parentheses**: override default precedence, especially when mixing booleans with positional clauses.
+- **Comma chains**: separate full expressions with `,` to implicitly require every segment (`alpha, foo BEF/1 bar`).
 
 #### 🔤 Lowercase Rule
 - Reserved words stay uppercase (`AND`, `OR`, `NOT`, `XOR`, `NEAR`, `BEF`, `AFT`, `ONLY`, `LIKE`, `STR`, `END`, `LEN`, `SIZE`, `IN`, `INOF`).
@@ -69,13 +70,15 @@ Rules: `AND`/`OR` must sit between expressions; `NOT` always prefixes the subexp
 - Match chaining: `STR hello world AND END goodbye`, `LIKE foo bar baz`.
 
 ### 4️⃣ Operator Precedence
-1. Boolean (`NOT` > `AND` > `OR` == `XOR`)
-2. Positional (`NEAR`, `BEF`, `AFT`) and Match (`ONLY`, `LIKE`, `STR`, `END`)
+1. Parentheses
+2. Unary `NOT`
+3. Binary boolean chains (`AND`/`OR`/`XOR`) evaluated strictly left-to-right
+4. Positional + match operators (already self-contained expressions)
 
 Examples:
-- `apple AND orange OR banana NOT lemon` → `((apple AND orange) OR (banana AND (NOT lemon)))`
-- `apple NEAR orange AND LIKE bana` → `AND` first, then `NEAR`, then `LIKE`.
-- `(foo XOR bar) AND LEN/3-10 AND foo BEF/2 IN(bar baz)` shows boolean + length + positional interplay.
+- `apple OR orange AND banana` → `(apple OR orange) AND banana`
+- `apple NEAR orange AND LIKE bana` → `AND` first, then evaluate positional/match clauses.
+- `(foo XOR bar) AND LEN/3-10, foo BEF/2 IN(bar baz)` shows commas chaining full expressions.
 
 ### 5️⃣ Best Practices
 1. ✅ Normalize text (lowercase + strip punctuation) before indexing.
@@ -89,12 +92,13 @@ Examples:
 ## 中文指南
 
 ### 📌 版本信息
-- 版本：**v2025.11.10**
+- 版本：**v2025.11.11**
 
 
 ### 1️⃣ 基础概念
 - **表达式**：由最小表达式和运算符组成，结果为 `True/False`。
 - **括号**：可改变默认优先级，尤其在布尔与位置操作混合时更清晰。
+- **多段逗号**：用 `,` 串联完整表达式，等价于逐个 `AND` 约束，如 `alpha, foo BEF/1 bar`。
 
 #### 🔤 小写规则
 - 保留字使用大写（`AND`、`OR`、`NOT`、`XOR`、`NEAR`、`BEF`、`AFT`、`ONLY`、`LIKE`、`STR`、`END`、`LEN`、`SIZE`、`IN`、`INOF`）。
@@ -150,13 +154,15 @@ Examples:
 - 匹配链：`STR hello world AND END goodbye`、`LIKE foo bar baz`。
 
 ### 4️⃣ 运算优先级
-1. 布尔运算（`NOT` > `AND` > `OR` = `XOR`）
-2. 位置与匹配运算（`NEAR`、`BEF`、`AFT`、`ONLY`、`LIKE`、`STR`、`END`）
+1. 括号
+2. 一元 `NOT`
+3. `AND`/`OR`/`XOR` 等二元布尔运算，从左到右依次计算
+4. 位置与匹配运算（`NEAR`、`BEF`、`AFT`、`ONLY`、`LIKE`、`STR`、`END` 等）
 
 示例：
-- `apple AND orange OR banana NOT lemon` → `((apple AND orange) OR (banana AND (NOT lemon)))`
-- `apple NEAR orange AND LIKE bana` → 先 `AND`，再 `NEAR`，最后 `LIKE`
-- `(foo XOR bar) AND LEN/3-10 AND foo BEF/2 IN(bar baz)` 体现布尔 + 长度 + 位置的搭配
+- `apple OR orange AND banana` → `(apple OR orange) AND banana`
+- `apple NEAR orange AND LIKE bana` → 先算 `AND`，再处理位置/匹配。
+- `(foo XOR bar) AND LEN/3-10, foo BEF/2 IN(bar baz)` 展示了逗号分段的组合。
 
 ### 5️⃣ 最佳实践
 1. ✅ 预处理文本，统一小写并去除多余符号。

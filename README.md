@@ -7,7 +7,8 @@
 ## English Version
 
 ### ✨ Highlights
-- 🔀 **Boolean logic**: `NOT` > `AND` > (`OR` == `XOR`) with parentheses for custom precedence.
+- 🔀 **Boolean logic**: Parentheses > `NOT` > (`AND`/`OR`/`XOR` evaluated left-to-right) for predictable chains.
+- ⛓️ **Comma chains**: `alpha, foo BEF/1 bar` evaluates each segment like implicit `AND`.
 - 📍 **Positional windows**: `BEF`, `AFT`, `NEAR` accept `/n`, `/m-n`, or `/*`, and can chain `IN(...)` (all targets) / `INOF(...)` (any target).
 - 📏 **Length guards**: `LEN/3-10` for token counts, `SIZE/32-128` for byte ranges.
 - 🎯 **Match helpers**: `ONLY`, `LIKE`, `STR`, `END` cover set equality, fuzzy presence, and start/end checks.
@@ -40,7 +41,7 @@ python -m pip install lexiquery
 
 ### 🧪 Tests
 ```bash
-PYTHONPATH=. pytest
+PYTHONPATH=src pytest
 ```
 
 ### 🧩 Syntax Cheat Sheet
@@ -63,7 +64,8 @@ MIT License.
 ## 中文版本
 
 ### ✨ 功能亮点
-- 🔀 **布尔优先级**：`NOT` > `AND` > (`OR` == `XOR`)，可用括号自定义顺序。
+- 🔀 **布尔优先级**：括号 > `NOT` > (`AND`/`OR`/`XOR` 左到右计算)，更贴近自然阅读。
+- ⛓️ **多段表达式**：使用逗号分段，如 `alpha, foo BEF/1 bar`，效果等同连续 `AND`。
 - 📍 **位置窗口**：`BEF`、`AFT`、`NEAR` 支持 `/n`、`/m-n`、`/*`，还能链式追加 `IN(...)`（全部满足）或 `INOF(...)`（任一满足）。
 - 📏 **长度约束**：`LEN/3-10` 控制词数，`SIZE/32-128` 控制字节长度。
 - 🎯 **匹配运算**：`ONLY`、`LIKE`、`STR`、`END` 覆盖集合判断与首尾匹配。

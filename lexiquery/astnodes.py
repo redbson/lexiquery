@@ -61,3 +61,7 @@ class Xor(Node):
 @dataclass
 class Group(Node):
     expr: Node
+
+@dataclass
+class ExprList(Node):
+    exprs: List[Node]

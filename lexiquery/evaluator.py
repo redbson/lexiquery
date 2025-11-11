@@ -50,6 +50,13 @@ class Evaluator:
         if isinstance(node, Group):
             return self.eval(node.expr)
 
+        if isinstance(node, ExprList):
+            for expr in node.exprs:
+                result = self.eval(expr)
+                if not result.matched:
+                    return EvalResult(False, {})
+            return EvalResult(True, {})
+
         if isinstance(node, Word):
             pos = token_positions(self.index, node.value, node.wildcard)
             return EvalResult(bool(pos), {node.value: pos} if pos else {})

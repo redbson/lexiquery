@@ -21,40 +21,46 @@ class Parser:
         return t
 
     def parse(self) -> Node:
-        node = self.parse_or()
+        node = self.parse_expression_list()
         if self.peek() is not None:
             raise GrammarError("Trailing tokens after complete expression")
         return node
 
-    def parse_or(self) -> Node:
-        node = self.parse_and()
+    def parse_expression_list(self) -> Node:
+        nodes = [self.parse_boolean_chain()]
         while True:
             t = self.peek()
-            if t and t.kind == 'OP' and t.value in ('OR', 'XOR'):
+            if t and t.kind == 'COMMA':
+                self.eat('COMMA')
+                nodes.append(self.parse_boolean_chain())
+            else:
+                break
+        if len(nodes) == 1:
+            return nodes[0]
+        return ExprList(nodes)
+
+    def parse_boolean_chain(self) -> Node:
+        node = self.parse_unary()
+        while True:
+            t = self.peek()
+            if t and t.kind == 'OP' and t.value in ('AND', 'OR', 'XOR'):
                 op = self.eat('OP').value
-                right = self.parse_and()
-                node = Or(node, right) if op == 'OR' else Xor(node, right)
+                right = self.parse_unary()
+                if op == 'AND':
+                    node = And(node, right)
+                elif op == 'OR':
+                    node = Or(node, right)
+                else:
+                    node = Xor(node, right)
             else:
                 break
         return node
 
-    def parse_and(self) -> Node:
-        node = self.parse_not()
-        while True:
-            t = self.peek()
-            if t and t.kind == 'OP' and t.value == 'AND':
-                self.eat('OP')
-                right = self.parse_not()
-                node = And(node, right)
-            else:
-                break
-        return node
-
-    def parse_not(self) -> Node:
+    def parse_unary(self) -> Node:
         t = self.peek()
         if t and t.kind == 'OP' and t.value == 'NOT':
             self.eat('OP')
-            expr = self.parse_not()
+            expr = self.parse_unary()
             return Not(expr)
         return self.parse_atom()
 
@@ -65,7 +71,7 @@ class Parser:
 
         if t.kind == 'LPAREN':
             self.eat('LPAREN')
-            node = self.parse_or()
+            node = self.parse_boolean_chain()
             if not (self.peek() and self.peek().kind == 'RPAREN'):
                 raise GrammarError("BO5: Missing closing parenthesis")
             self.eat('RPAREN')

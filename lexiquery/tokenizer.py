@@ -15,13 +15,13 @@ OP_RE = re.compile(
 
 @dataclass
 class Token:
-    kind: str   # WORD, OP, LPAREN, RPAREN, STAR
+    kind: str   # WORD, OP, LPAREN, RPAREN, STAR, COMMA
     value: str
 
 def tokenize(expr: str) -> List[Token]:
     # normalize compact wildcards: foo* -> foo *
     expr = re.sub(r'(\w+)\*', r'\1 *', expr)
-    expr = re.sub(r'([()])', r' \1 ', expr)
+    expr = re.sub(r'([(),])', r' \1 ', expr)
     raw = expr.strip().split()
     tokens: List[Token] = []
     for r in raw:
@@ -29,6 +29,8 @@ def tokenize(expr: str) -> List[Token]:
             tokens.append(Token('LPAREN', r))
         elif r == ')':
             tokens.append(Token('RPAREN', r))
+        elif r == ',':
+            tokens.append(Token('COMMA', r))
         elif OP_RE.match(r):
             val = r.upper()
             if val == '*':

@@ -50,6 +50,18 @@ def test_deeply_nested_boolean_expression():
         "NOT ((foo BEF/1 bar) XOR (baz AFT/* qux)) AND "
         "((foo NEAR/1 bar) OR (baz BEF/2 qux)) AND "
         "(foo BEF/2 IN(bar baz)) AND "
-        "NOT SIZE/5"
+        "NOT SIZE/5, "
+        "alpha, foo BEF/1 bar, "
+        "NOT barrr AND fo* BEF/* qux"
     )
     assert T(text, expr)
+
+def test_comma_separators_require_all_segments():
+    text = "alpha foo bar"
+    assert T(text, "alpha, foo BEF/1 bar")
+    assert not T(text, "alpha, baz")
+
+def test_boolean_chain_left_to_right():
+    text = "foo bar"
+    assert not T(text, "foo OR bar AND baz")
+    assert T("foo bar baz", "foo OR bar AND baz")
